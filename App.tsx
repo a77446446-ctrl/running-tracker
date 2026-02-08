@@ -262,27 +262,58 @@ const RacesPage: React.FC = () => {
       )}
 
       <div className="space-y-4">
-        {races.map((race) => (
-          <div key={race.id} className="bg-surface p-4 rounded-xl border border-slate-700 flex gap-4">
-            {race.imageUrl ? (
-               <img src={race.imageUrl} alt="Logo" className="w-16 h-16 rounded-lg object-contain bg-white/5" />
-            ) : (
-               <div className="w-16 h-16 rounded-lg bg-slate-800 flex items-center justify-center text-slate-500">
-                 <Trophy size={24} />
-               </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-white truncate">{race.title || 'Название события'}</h3>
-              <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
-                <Calendar size={12} />
-                <span>{new Date(race.beginDate).toLocaleDateString('ru-RU')}</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
-                <MapPin size={12} />
-                <span className="truncate">{race.place || 'Местоположение'}</span>
+        {races
+          .filter(race => (race.place?.toLowerCase().includes('россия') || race.address?.toLowerCase().includes('россия') || race.place?.toLowerCase().includes('russia')))
+          .map((race) => (
+          <a 
+            key={race.id} 
+            href={`https://russiarunning.com/event/${race.code}`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="block bg-surface p-4 rounded-xl border border-slate-700 hover:border-primary/50 transition-all hover:bg-slate-800"
+          >
+            <div className="flex gap-4">
+              {race.imageUrl ? (
+                <img src={race.imageUrl} alt="Logo" className="w-20 h-20 rounded-lg object-contain bg-white/5" />
+              ) : (
+                <div className="w-20 h-20 rounded-lg bg-slate-800 flex items-center justify-center text-slate-500">
+                  <Trophy size={24} />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-white leading-tight mb-2">{race.title || 'Название события'}</h3>
+                
+                <div className="grid grid-cols-2 gap-y-1 gap-x-4 text-xs text-slate-400">
+                  <div className="flex items-center gap-1">
+                    <Calendar size={12} className="text-primary" />
+                    <span>{new Date(race.beginDate).toLocaleDateString('ru-RU')}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-1">
+                    <User size={12} className="text-blue-400" />
+                    <span>{race.participantsCount || 0} уч.</span>
+                  </div>
+
+                  <div className="col-span-2 flex items-start gap-1">
+                    <MapPin size={12} className="text-red-400 shrink-0 mt-0.5" />
+                    <span className="truncate">{race.place || race.address || 'Местоположение'}</span>
+                  </div>
+                </div>
+
+                {/* Distances/Disciplines */}
+                {race.raceItems && race.raceItems.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-1">
+                    {Array.from(new Set(race.raceItems.map((item: any) => item.distance || 0))).sort((a:any,b:any) => a-b).slice(0, 4).map((dist: any) => (
+                      <span key={dist} className="px-2 py-0.5 rounded bg-slate-700 text-[10px] text-slate-300 border border-slate-600">
+                        {dist} км
+                      </span>
+                    ))}
+                    {race.raceItems.length > 4 && <span className="text-[10px] text-slate-500 self-center">...</span>}
+                  </div>
+                )}
               </div>
             </div>
-          </div>
+          </a>
         ))}
       </div>
     </div>
