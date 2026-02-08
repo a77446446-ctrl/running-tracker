@@ -1,0 +1,7 @@
+{
+  "name": "Трекер бега",
+  "description": "Умный трекер бега с анализом фото и статистикой на базе Gemini",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
