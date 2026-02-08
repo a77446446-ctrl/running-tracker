@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { HashRouter, Routes, Route, useNavigate, Link } from 'react-router-dom';
+import { HashRouter, Routes, Route, useNavigate, Link, useParams, Navigate } from 'react-router-dom';
 import { Activity, MapPin, Clock, Calendar, ChevronRight, Upload, Camera, Loader2, Trophy, Flame, User, Settings, ArrowLeft } from 'lucide-react';
 import StatsChart from './components/StatsChart';
 import Navigation from './components/Navigation';
@@ -494,6 +494,76 @@ const AddRun: React.FC<{ onAdd: (run: RunLog) => void }> = ({ onAdd }) => {
   );
 };
 
+// 3.5 RUN DETAILS
+const RunDetailsPage: React.FC<{ runs: RunLog[] }> = ({ runs }) => {
+  const { id } = useParams<{ id: string }>();
+  const run = runs.find(r => r.id === id);
+
+  if (!run) return <Navigate to="/history" replace />;
+
+  return (
+    <div className="pb-24 pt-6 px-4 max-w-md mx-auto animate-fade-in">
+      <div className="flex items-center gap-4 mb-6">
+        <Link to="/history" className="p-2 rounded-full bg-slate-800 text-slate-400 hover:text-white transition-colors">
+          <ArrowLeft size={24} />
+        </Link>
+        <h1 className="text-2xl font-bold text-white">Тренировка</h1>
+      </div>
+
+      <div className="space-y-6">
+        <div className="flex items-center gap-2 text-slate-400">
+           <Calendar size={18} />
+           <span className="text-lg">{new Date(run.date).toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+            <div className="bg-surface p-5 rounded-2xl border border-slate-700">
+               <div className="text-slate-400 text-xs uppercase font-bold mb-1">Дистанция</div>
+               <div className="text-3xl font-black text-white">{run.distance} <span className="text-sm font-normal text-slate-500">км</span></div>
+            </div>
+            <div className="bg-surface p-5 rounded-2xl border border-slate-700">
+               <div className="text-slate-400 text-xs uppercase font-bold mb-1">Время</div>
+               <div className="text-3xl font-black text-white">{run.duration} <span className="text-sm font-normal text-slate-500">мин</span></div>
+            </div>
+            <div className="bg-surface p-5 rounded-2xl border border-slate-700 col-span-2 flex items-center justify-between">
+               <div>
+                   <div className="text-slate-400 text-xs uppercase font-bold mb-1">Темп</div>
+                   <div className="text-3xl font-black text-primary">{run.pace.toFixed(2)} <span className="text-sm font-normal text-slate-500">мин/км</span></div>
+               </div>
+               {run.pace < 5 && <Flame size={32} className="text-orange-500" />}
+            </div>
+        </div>
+
+        {run.imageUrl && (
+            <div className="rounded-2xl overflow-hidden border border-slate-700 shadow-lg">
+                <img src={run.imageUrl} alt="Run" className="w-full object-cover" />
+            </div>
+        )}
+
+        {run.notes && (
+            <div className="bg-surface p-5 rounded-2xl border border-slate-700">
+                <h3 className="text-white font-bold mb-2 flex items-center gap-2">
+                    <Settings size={18} className="text-slate-400" />
+                    Заметки
+                </h3>
+                <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">{run.notes}</p>
+            </div>
+        )}
+
+        {run.aiFeedback && (
+            <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-5 rounded-2xl border border-slate-700/50">
+                <h3 className="text-primary font-bold mb-2 flex items-center gap-2">
+                    <Activity size={18} />
+                    Анализ ИИ
+                </h3>
+                <p className="text-slate-300 italic leading-relaxed">{run.aiFeedback}</p>
+            </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // 4. HISTORY
 const HistoryPage: React.FC<{ runs: RunLog[] }> = ({ runs }) => {
   const sortedRuns = [...runs].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -504,7 +574,7 @@ const HistoryPage: React.FC<{ runs: RunLog[] }> = ({ runs }) => {
       
       <div className="space-y-4">
         {sortedRuns.map(run => (
-          <div key={run.id} className="bg-surface rounded-xl border border-slate-700 overflow-hidden">
+          <Link to={`/run/${run.id}`} key={run.id} className="block bg-surface rounded-xl border border-slate-700 overflow-hidden hover:border-primary transition-colors">
             <div className="p-4">
               <div className="flex justify-between items-start mb-2">
                 <div className="flex items-center gap-2 text-slate-400 text-sm">
@@ -551,7 +621,7 @@ const HistoryPage: React.FC<{ runs: RunLog[] }> = ({ runs }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-surface to-transparent opacity-50"></div>
               </div>
             )}
-          </div>
+          </Link>
         ))}
         {sortedRuns.length === 0 && (
           <div className="text-center py-10">
@@ -601,6 +671,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Dashboard runs={runs} userProfile={userProfile} />} />
           <Route path="/add" element={<AddRun onAdd={addRun} />} />
           <Route path="/history" element={<HistoryPage runs={runs} />} />
+          <Route path="/run/:id" element={<RunDetailsPage runs={runs} />} />
           <Route path="/races" element={<RacesPage />} />
           <Route path="/profile" element={<ProfilePage userProfile={userProfile} onSave={updateProfile} />} />
         </Routes>
