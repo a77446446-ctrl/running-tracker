@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, PlusCircle, History, Trophy } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, History, Trophy, Activity } from 'lucide-react';
 import { NavigationTab } from '../types';
 
 const Navigation: React.FC = () => {
@@ -15,30 +15,33 @@ const Navigation: React.FC = () => {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 w-full h-20 bg-surface/90 backdrop-blur-md border-t border-slate-700 z-50">
-      <div className="flex justify-around items-center h-full max-w-md mx-auto px-4">
-        <Link to="/" className={getLinkClass('/')}>
-          <LayoutDashboard size={24} />
-          <span className="text-xs font-medium">Обзор</span>
-        </Link>
-        
-        <Link to="/add" className={getLinkClass('/add')}>
-          <div className={`p-3 rounded-full ${currentPath === '/add' ? 'bg-primary text-dark shadow-[0_0_15px_rgba(163,230,53,0.5)]' : 'bg-slate-700 text-slate-400'} transition-all transform hover:scale-105`}>
-            <PlusCircle size={28} />
-          </div>
-        </Link>
+    <>
+      <nav className="fixed bottom-0 left-0 w-full h-20 bg-surface/90 backdrop-blur-md border-t border-slate-700 z-50">
+        <div className="flex justify-around items-center h-full max-w-md mx-auto px-4">
+          <Link to="/" className={getLinkClass('/')}>
+            <LayoutDashboard size={24} />
+            <span className="text-xs font-medium">Обзор</span>
+          </Link>
+          
+          <Link to="/races" className={getLinkClass('/races')}>
+            <Trophy size={24} />
+            <span className="text-xs font-medium">Старты</span>
+          </Link>
+          
+          <Link to="/history" className={getLinkClass('/history')}>
+            <History size={24} />
+            <span className="text-xs font-medium">История</span>
+          </Link>
+        </div>
+      </nav>
 
-        <Link to="/races" className={getLinkClass('/races')}>
-          <Trophy size={24} />
-          <span className="text-xs font-medium">Старты</span>
-        </Link>
-        
-        <Link to="/history" className={getLinkClass('/history')}>
-          <History size={24} />
-          <span className="text-xs font-medium">История</span>
-        </Link>
-      </div>
-    </nav>
+      {/* Floating Action Button for Adding Training */}
+      <Link to="/add" className="fixed bottom-12 right-6 z-50">
+        <div className={`p-4 rounded-full ${currentPath === '/add' ? 'bg-primary text-dark shadow-[0_0_15px_rgba(163,230,53,0.5)]' : 'bg-slate-700 text-slate-400'} transition-all transform hover:scale-105 shadow-xl border border-slate-600`}>
+          <Activity size={32} />
+        </div>
+      </Link>
+    </>
   );
 };
 

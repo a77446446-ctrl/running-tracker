@@ -208,20 +208,23 @@ const RacesPage: React.FC = () => {
   useEffect(() => {
     const fetchRaces = async () => {
       try {
-        const response = await fetch('/api/events/recommendedEvents?Language=ru&Size=50');
+        const response = await fetch('/api/events/list', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            Page: { Take: 100, Skip: 0 },
+            Language: 'ru',
+            Filter: { EventsLoaderType: 1 }
+          })
+        });
         if (!response.ok) throw new Error('Failed to fetch races');
         
         const data = await response.json();
-        // Assuming data is an array or has a property with array
-        // Adjust based on actual API response. RussiaRunning usually returns an array or object with List
-        const events = Array.isArray(data) ? data : (data.events || data.Items || []);
+        const events = data.list || [];
         
-        const now = new Date();
-        const futureEvents = events
-          .filter((e: any) => new Date(e.DateStart || e.startDate || e.date) >= now)
-          .sort((a: any, b: any) => new Date(a.DateStart || a.startDate || a.date).getTime() - new Date(b.DateStart || b.startDate || b.date).getTime());
-
-        setRaces(futureEvents);
+        setRaces(events);
       } catch (err) {
         console.error(err);
         setError('Не удалось загрузить список соревнований. Попробуйте позже.');
@@ -260,23 +263,23 @@ const RacesPage: React.FC = () => {
 
       <div className="space-y-4">
         {races.map((race) => (
-          <div key={race.Id || race.id} className="bg-surface p-4 rounded-xl border border-slate-700 flex gap-4">
-            {race.Logo?.Url || race.logoUrl ? (
-               <img src={race.Logo?.Url || race.logoUrl} alt="Logo" className="w-16 h-16 rounded-lg object-contain bg-white/5" />
+          <div key={race.id} className="bg-surface p-4 rounded-xl border border-slate-700 flex gap-4">
+            {race.imageUrl ? (
+               <img src={race.imageUrl} alt="Logo" className="w-16 h-16 rounded-lg object-contain bg-white/5" />
             ) : (
                <div className="w-16 h-16 rounded-lg bg-slate-800 flex items-center justify-center text-slate-500">
                  <Trophy size={24} />
                </div>
             )}
             <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-white truncate">{race.Title || race.Name || race.name || 'Название события'}</h3>
+              <h3 className="font-bold text-white truncate">{race.title || 'Название события'}</h3>
               <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
                 <Calendar size={12} />
-                <span>{new Date(race.DateStart || race.startDate || race.date).toLocaleDateString('ru-RU')}</span>
+                <span>{new Date(race.beginDate).toLocaleDateString('ru-RU')}</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
                 <MapPin size={12} />
-                <span className="truncate">{race.City?.Name || race.city || 'Местоположение'}</span>
+                <span className="truncate">{race.place || 'Местоположение'}</span>
               </div>
             </div>
           </div>
