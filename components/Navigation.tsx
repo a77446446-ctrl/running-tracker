@@ -25,7 +25,7 @@ const Navigation: React.FC = () => {
           
           <Link to="/races" className={getLinkClass('/races')}>
             <Trophy size={24} />
-            <span className="text-xs font-medium">Старты</span>
+            <span className="text-xs font-medium">Афиша</span>
           </Link>
           
           <Link to="/history" className={getLinkClass('/history')}>
@@ -36,11 +36,15 @@ const Navigation: React.FC = () => {
       </nav>
 
       {/* Floating Action Button for Adding Training */}
-      <Link to="/add" className="fixed bottom-12 right-6 z-50">
-        <div className={`p-4 rounded-full ${currentPath === '/add' ? 'bg-primary text-dark shadow-[0_0_15px_rgba(163,230,53,0.5)]' : 'bg-slate-700 text-slate-400'} transition-all transform hover:scale-105 shadow-xl border border-slate-600`}>
-          <Activity size={32} />
+      <div className="fixed bottom-0 left-0 w-full z-50 pointer-events-none flex justify-center">
+        <div className="w-full max-w-md relative">
+          <Link to="/add" className="absolute bottom-12 right-6 pointer-events-auto">
+            <div className={`p-4 rounded-full ${currentPath === '/add' ? 'bg-primary text-dark shadow-[0_0_15px_rgba(163,230,53,0.5)]' : 'bg-slate-700 text-slate-400'} transition-all transform hover:scale-105 shadow-xl border border-slate-600`}>
+              <Activity size={32} />
+            </div>
+          </Link>
         </div>
-      </Link>
+      </div>
     </>
   );
 };

@@ -242,7 +242,7 @@ const RacesPage: React.FC = () => {
         <Link to="/" className="p-2 rounded-full bg-slate-800 text-slate-400 hover:text-white transition-colors">
           <ArrowLeft size={24} />
         </Link>
-        <h1 className="text-2xl font-bold text-white">Соревнования</h1>
+        <h1 className="text-2xl font-bold text-white">Афиша</h1>
       </div>
 
       {loading && (
